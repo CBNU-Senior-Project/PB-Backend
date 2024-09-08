@@ -29,4 +29,4 @@ docker-compose down
 docker-compose up -d
 ```
 
-After then, start `src/auth-service/src/main/java/com/phishing/authservice/NotiServiceApplication`
+After then, start `src/auth-service/src/main/java/com/phishing/notiservice/NotiServiceApplication`
