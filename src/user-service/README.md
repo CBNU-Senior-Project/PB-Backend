@@ -1,4 +1,4 @@
-# PB-Backend Auth-Service
+# PB-Backend User-Service
 
 This is the authentication server for the voice phishing prevention application **Phishing Block**.
 
