@@ -1,4 +1,4 @@
-package com.phishing.notiservice.domain;
+package com.phishing.notiservice.adapter.outbound.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

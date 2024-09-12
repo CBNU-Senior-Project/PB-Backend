@@ -8,13 +8,19 @@ spring:
     username: phishing
     password: phishing
     url: jdbc:mysql://localhost:3306/phishing?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
-    jpa:
-      properties:
-        hibernate:
-          show_sql: true
-          format_sql: true
+  jpa:
+    properties:
       hibernate:
-        ddl-auto: create-drop
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
   kafka:
     consumer:
-      group-id: group-id
+      group-id: noti-service
+      auto-offset-reset: earliest
+    bootstrap:
+      servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

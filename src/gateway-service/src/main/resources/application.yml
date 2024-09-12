@@ -23,7 +23,7 @@ spring:
             - id: NOTI-SERVER
               uri: lb://NOTI-SERVICE
               predicates:
-                - Path=/auth/**
+                - Path=/noti/**
               filters:
                 - AuthenticationFilter
 

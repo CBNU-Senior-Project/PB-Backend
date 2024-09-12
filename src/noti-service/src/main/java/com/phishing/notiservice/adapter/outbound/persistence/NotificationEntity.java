@@ -1,6 +1,5 @@
 package com.phishing.notiservice.adapter.outbound.persistence;
 
-import com.phishing.notiservice.domain.BaseEntity;
 import com.phishing.notiservice.domain.NotiPayload;
 import com.phishing.notiservice.domain.NotiType;
 import jakarta.persistence.*;

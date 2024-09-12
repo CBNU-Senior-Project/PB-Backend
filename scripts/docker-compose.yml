@@ -51,7 +51,8 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:29092,EXTERNAL://localhost:9092
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
-      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_NUM_PARTITIONS: 1
   kafka-ui:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui

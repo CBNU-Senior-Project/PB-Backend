@@ -5,5 +5,5 @@ import com.phishing.notiservice.domain.NotiTracking;
 import java.util.List;
 
 public interface SaveNotiTrackingPort {
-    void saveNotiTracking(List<NotiTracking> notiTrackingEntities);
+    void saveNotiTracking(List<NotiTracking> notiTrackings);
 }
