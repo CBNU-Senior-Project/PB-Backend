@@ -19,12 +19,12 @@ public class NotiUser {
 
     private boolean isActive;
 
-    public static NotiUser create(Long userId, Long groupId, DeviceInfo deviceInfo) {
+    public static NotiUser create(Long userId, Long groupId, DeviceInfo deviceInfo, boolean isActive) {
         return NotiUser.builder()
                 .userId(userId)
                 .groupId(groupId)
                 .deviceInfo(deviceInfo)
-                .isActive(true)
+                .isActive(isActive)
                 .build();
     }
 }
