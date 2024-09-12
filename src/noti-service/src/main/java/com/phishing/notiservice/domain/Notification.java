@@ -1,14 +1,13 @@
 package com.phishing.notiservice.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.phishing.notiservice.adapter.outbound.persistence.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class Notification extends BaseEntity{
+@Builder(access = AccessLevel.PRIVATE)
+public class Notification extends BaseEntity {
     private Long notificationId;
 
     private NotiPayload payload;
@@ -17,7 +16,6 @@ public class Notification extends BaseEntity{
 
     private Long targetGroupId;
 
-    @Builder
     public static Notification create(NotiPayload payload, NotiType notiType, Long targetGroupId) {
         return Notification.builder()
                 .payload(payload)
