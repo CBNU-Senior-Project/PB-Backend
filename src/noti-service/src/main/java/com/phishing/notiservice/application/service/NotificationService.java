@@ -3,15 +3,14 @@ package com.phishing.notiservice.application.service;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
-import com.phishing.common.event.events.PredictFinishedEvent;
-import com.phishing.notiservice.application.port.inbound.NotificationUsecase;
+import com.phishing.notiservice.application.port.inbound.SendNotificationEvent;
+import com.phishing.notiservice.application.port.inbound.SendNotificationUsecase;
 import com.phishing.notiservice.application.port.outbound.LoadNotiUserPort;
 import com.phishing.notiservice.application.port.outbound.SaveNotiTrackingPort;
 import com.phishing.notiservice.application.port.outbound.SaveNotificationPort;
 import com.phishing.notiservice.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class NotificationService implements NotificationUsecase {
+public class NotificationService implements SendNotificationUsecase {
 
     private final LoadNotiUserPort loadNotiUserPort;
     private final SaveNotificationPort saveNotificationPort;
@@ -30,11 +29,11 @@ public class NotificationService implements NotificationUsecase {
 
     @Transactional
     @Override
-    public void sendNotification(PredictFinishedEvent predictFinishedEvent) {
+    public void sendNotification(SendNotificationEvent sendNotificationEvent) {
         log.info("Send notification to user: {}, isPhishing: {}, probability: {}",
-                predictFinishedEvent.getUserId(), predictFinishedEvent.isPhishing(), predictFinishedEvent.getProbability());
-        Notification targetNoti = Notification.create(NotiPayload.createPredFinNoti(predictFinishedEvent.getProbability()), NotiType.POTENTIAL_PHISHING_ALERT,
-                loadNotiUserPort.loadNotiUser(predictFinishedEvent.getUserId()).getGroupId());
+                sendNotificationEvent.userId(), sendNotificationEvent.isPhishing(), sendNotificationEvent.probability());
+        Notification targetNoti = Notification.create(NotiPayload.createPredFinNoti(sendNotificationEvent.probability()), NotiType.POTENTIAL_PHISHING_ALERT,
+                loadNotiUserPort.loadNotiUser(sendNotificationEvent.userId()).getGroupId());
         saveNotificationPort.saveNotification(targetNoti);
         List<NotiUser> targetUsers = loadNotiUserPort.loadNotiUserByGroupId(targetNoti.getTargetGroupId());
         List<Message> messages = new ArrayList<>();
