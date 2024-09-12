@@ -1,6 +1,5 @@
 package com.phishing.notiservice.adapter.outbound.persistence;
 
-import com.phishing.notiservice.domain.BaseEntity;
 import com.phishing.notiservice.domain.DeviceInfo;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,4 +29,12 @@ public class NotiUserEntity extends BaseEntity {
     @Column(name = "is_active")
     private boolean isActive;
 
+    public static NotiUserEntity create(Long userId, Long groupId, DeviceInfo deviceInfo, boolean isActive) {
+        return NotiUserEntity.builder()
+                .userId(userId)
+                .groupId(groupId)
+                .deviceInfo(deviceInfo)
+                .isActive(isActive)
+                .build();
+    }
 }
