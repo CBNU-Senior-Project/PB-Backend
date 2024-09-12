@@ -14,4 +14,13 @@ public class NotiUserMapper {
                 .isActive(notiUserEntity.isActive())
                 .build();
     }
+
+    public static NotiUserEntity toEntity(NotiUser notiUser) {
+        return NotiUserEntity.create(
+                notiUser.getUserId(),
+                notiUser.getGroupId(),
+                notiUser.getDeviceInfo(),
+                notiUser.isActive()
+        );
+    }
 }
