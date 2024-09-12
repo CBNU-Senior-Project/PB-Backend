@@ -1,24 +1,31 @@
 package com.phishing.notiservice.adapter.inbound.eventbroker;
 
 import com.phishing.common.event.events.PredictFinishedEvent;
-import com.phishing.notiservice.application.port.inbound.NotificationUsecase;
-import com.phishing.notiservice.application.service.NotificationService;
+import com.phishing.notiservice.application.port.inbound.SendNotificationEvent;
+import com.phishing.notiservice.application.port.inbound.SendNotificationUsecase;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 @Data
+@RequiredArgsConstructor
 public class KafkaEventConsumer {
 
-    private final NotificationUsecase notificationUsecase;
+    private final SendNotificationUsecase sendNotificationUsecase;
 
-    @KafkaListener(topics = "phishing-detection", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "phishing-detection", groupId = "${spring.kafka.consumer.group-id}",
+    containerFactory = "kafkaListenerContainerFactory")
     public void consumePredictFinishedEvent(PredictFinishedEvent predictFinishedEvent) {
         log.info("Consumed message: {}", predictFinishedEvent);
-        notificationUsecase.sendNotification(predictFinishedEvent);
+        SendNotificationEvent event = new SendNotificationEvent(
+                predictFinishedEvent.getUserId(),
+                predictFinishedEvent.isPhishing(),
+                predictFinishedEvent.getProbability()
+        );
+        sendNotificationUsecase.sendNotification(event);
     }
 }
