@@ -37,4 +37,7 @@ public class GroupMember extends BaseEntity {
     public void setIsAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

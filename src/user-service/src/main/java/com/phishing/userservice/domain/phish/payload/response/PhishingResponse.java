@@ -13,5 +13,6 @@ public class PhishingResponse {
     private Long phishingId;
     private PhishingType phishingType;
     private String value;
+    private String content;
 
 }

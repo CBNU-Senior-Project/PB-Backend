@@ -22,11 +22,11 @@ public class PhishingService {
     private final PhishingRepository phishingRepository;
     private final UserRepository userRepository;
 
-    public void addPhishingData(Long userId, PhishingType phishingType, String value) {
+    public void addPhishingData(Long userId, PhishingType phishingType, String value,String content) {
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        Phishing phishing = Phishing.create(creator, phishingType, value);
+        Phishing phishing = Phishing.create(creator, phishingType, value,content);
         phishingRepository.save(phishing);
     }
 
@@ -35,7 +35,8 @@ public class PhishingService {
                 .map(phishing -> new PhishingResponse(
                         phishing.getPhishingId(),
                         phishing.getPhishingType(),
-                        phishing.getValue()
+                        phishing.getValue(),
+                        phishing.getContent()
                 ))
                 .collect(Collectors.toList());
     }
@@ -46,7 +47,8 @@ public class PhishingService {
                 .map(phishing -> new PhishingResponse(
                         phishing.getPhishingId(),
                         phishing.getPhishingType(),
-                        phishing.getValue()
+                        phishing.getValue(),
+                        phishing.getContent()
                 ))
                 .collect(Collectors.toList());
     }

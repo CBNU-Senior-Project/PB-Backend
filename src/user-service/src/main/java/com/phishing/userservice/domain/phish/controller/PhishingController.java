@@ -25,7 +25,7 @@ public class PhishingController {
             @RequestHeader("Authorization") String token,
             @RequestBody PhishingRequest request) {
         Long userId = tokenResolver.getAccessClaims(token);
-        phishingService.addPhishingData(userId, request.getPhishingType(), request.getValue());
+        phishingService.addPhishingData(userId, request.getPhishingType(), request.getValue(),request.getContent());
         return ResponseEntity.ok().build();
     }
 

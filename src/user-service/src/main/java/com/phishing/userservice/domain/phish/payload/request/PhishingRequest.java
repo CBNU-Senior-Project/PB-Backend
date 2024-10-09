@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class PhishingRequest {
     private PhishingType phishingType;
     private String value;
+    private String content;
 }
