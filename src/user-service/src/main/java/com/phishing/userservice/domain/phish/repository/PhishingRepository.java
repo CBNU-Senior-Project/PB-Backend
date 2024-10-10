@@ -12,4 +12,5 @@ public interface PhishingRepository extends JpaRepository<Phishing, Long> {
 
     Optional<Phishing> findByPhishingTypeAndValue(PhishingType phishingType, String value);
 
+
 }

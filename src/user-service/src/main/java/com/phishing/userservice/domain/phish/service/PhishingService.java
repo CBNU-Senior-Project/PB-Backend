@@ -55,6 +55,16 @@ public class PhishingService {
         );
     }
 
+    public PhishingResponse searchPhishingDataByTypeAndValue(PhishingType phishingType, String value) {
+        Phishing phishingData = phishingRepository.findByPhishingTypeAndValue(phishingType, value)
+                .orElseThrow(() -> new IllegalArgumentException("해당 타입과 값에 대한 데이터를 찾을 수 없습니다."));
+
+        return new PhishingResponse(
+                phishingData.getPhishingId(),
+                phishingData.getPhishingType(),
+                phishingData.getValue()
+        );
+    }
 
     public void deletePhishingData(Long userId, Long phishingId) {
         User user = userRepository.findById(userId)

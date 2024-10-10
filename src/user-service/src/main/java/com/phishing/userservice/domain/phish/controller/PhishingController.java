@@ -39,8 +39,17 @@ public class PhishingController {
         return ResponseEntity.ok(phishingData);
     }
 
-    @Tag(name = "피싱 데이터 검색", description = "ex) 0109929 입력 {피싱 데이터를 검색하는 API}")
-    @PostMapping("/search")
+    @Tag(name = "피싱 데이터 검색", description = "피싱 타입과 값을 입력받아 해당 데이터를 조회하는 API")
+    @PostMapping("/search/type-and-value")
+    public ResponseEntity<PhishingResponse> searchPhishingDataByTypeAndValue(
+            @RequestBody SearchPhishingRequest request) {
+        PhishingResponse result = phishingService.searchPhishingDataByTypeAndValue(request.getPhishingType(), request.getValue());
+        return ResponseEntity.ok(result);
+    }
+
+
+    @Tag(name = "피싱 데이터 세부사항 조회", description = "ex) 피싱데이터를 조회해서 날짜랑 내용 받는 API")
+    @PostMapping("/detail/search")
     public ResponseEntity<SearchPhishingResponse> searchPhishingData(
             @RequestBody SearchPhishingRequest request) {
         SearchPhishingResponse result = phishingService.searchPhishingData(request.getPhishingType(), request.getValue());
