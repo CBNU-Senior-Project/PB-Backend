@@ -5,13 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhishingResponse {
+public class SearchPhishingResponse {
 
     private Long phishingId;
     private PhishingType phishingType;
     private String value;
+    private String content;
+    private LocalDateTime createdAt;
 
 }

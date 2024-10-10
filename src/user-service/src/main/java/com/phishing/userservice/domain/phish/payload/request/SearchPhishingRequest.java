@@ -1,16 +1,14 @@
-package com.phishing.userservice.domain.phish.payload.response;
+package com.phishing.userservice.domain.phish.payload.request;
 
 import com.phishing.userservice.domain.phish.domain.PhishingType;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhishingResponse {
-
-    private Long phishingId;
+public class SearchPhishingRequest {
     private PhishingType phishingType;
     private String value;
 
