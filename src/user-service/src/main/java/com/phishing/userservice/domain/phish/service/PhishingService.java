@@ -42,24 +42,25 @@ public class PhishingService {
                 .collect(Collectors.toList());
     }
 
-    public SearchPhishingResponse searchPhishingData(PhishingType phishingType, String value) {
-        Phishing phishingData = phishingRepository.findByPhishingTypeAndValue(phishingType, value)
-                .orElseThrow(() -> new EntityNotFoundException("해당 피싱 데이터가 없습니다."));
+    public List<SearchPhishingResponse> searchPhishingData(PhishingType phishingType, String value) {
+        List<Phishing> phishingDataList = phishingRepository.findByPhishingTypeAndValueContaining(phishingType, value);
 
-        return new SearchPhishingResponse(
-                phishingData.getPhishingId(),
-                phishingData.getPhishingType(),
-                phishingData.getValue(),
-                phishingData.getContent(),
-                phishingData.getCreatedAt()
-        );
+        if (phishingDataList.isEmpty()) {
+            throw new EntityNotFoundException("해당 타입과 값에 대한 데이터를 찾을 수 없습니다.");
+        }
+        return phishingDataList.stream()
+                .map(phishingData -> new SearchPhishingResponse(
+                        phishingData.getPhishingId(),
+                        phishingData.getPhishingType(),
+                        phishingData.getValue(),
+                        phishingData.getContent(),
+                        phishingData.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 
     public List<PhishingResponse> searchPhishingDataByTypeAndValue(PhishingType phishingType, String value) {
-        // 검색한 value와 일치하거나 포함된 데이터를 찾는다.
         List<Phishing> phishingDataList = phishingRepository.findByPhishingTypeAndValueContaining(phishingType, value);
-
-        // 검색된 데이터를 PhishingResponse로 매핑하여 리스트로 반환
         return phishingDataList.stream()
                 .map(phishingData -> new PhishingResponse(
                         phishingData.getPhishingId(),

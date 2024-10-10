@@ -49,13 +49,18 @@ public class PhishingController {
 
 
 
-    @Tag(name = "피싱 데이터 세부사항 조회", description = "ex) 피싱데이터를 조회해서 날짜랑 내용 받는 API")
+    @Tag(name = "피싱 데이터 세부사항 조회", description = "피싱 데이터를 조회하여 날짜와 내용을 리스트로 반환하는 API")
     @PostMapping("/detail/search")
-    public ResponseEntity<SearchPhishingResponse> searchPhishingData(
+    public ResponseEntity<List<SearchPhishingResponse>> searchPhishingData(
             @RequestBody SearchPhishingRequest request) {
-        SearchPhishingResponse result = phishingService.searchPhishingData(request.getPhishingType(), request.getValue());
+
+        // 리스트 형태로 검색 결과를 받음
+        List<SearchPhishingResponse> result = phishingService.searchPhishingData(request.getPhishingType(), request.getValue());
+
+        // 리스트 결과를 반환
         return ResponseEntity.ok(result);
     }
+
 
 
     @Tag(name = "피싱 데이터 삭제", description = "피싱 데이터를 삭제하는 API")

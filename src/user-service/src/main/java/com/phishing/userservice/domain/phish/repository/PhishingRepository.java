@@ -10,8 +10,5 @@ import java.util.Optional;
 public interface PhishingRepository extends JpaRepository<Phishing, Long> {
     List<Phishing> findByPhishingType(PhishingType type);
 
-    Optional<Phishing> findByPhishingTypeAndValue(PhishingType phishingType, String value);
-
-
     List<Phishing> findByPhishingTypeAndValueContaining(PhishingType phishingType, String value);
 }
