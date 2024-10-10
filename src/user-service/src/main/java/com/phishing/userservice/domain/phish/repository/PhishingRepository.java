@@ -5,8 +5,11 @@ import com.phishing.userservice.domain.phish.domain.PhishingType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PhishingRepository extends JpaRepository<Phishing, Long> {
     List<Phishing> findByPhishingType(PhishingType type);
-    List<Phishing> findByPhishingTypeAndValue(PhishingType type, String value);
+
+    Optional<Phishing> findByPhishingTypeAndValue(PhishingType phishingType, String value);
+
 }

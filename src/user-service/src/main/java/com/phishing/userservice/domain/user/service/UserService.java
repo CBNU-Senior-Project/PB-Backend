@@ -77,5 +77,11 @@ public class UserService {
         return UserInfoConverter.from(targetUser);
     }
 
+    public UserInfoResponse findUserIdByPhoneNumber(String phoneNumber) {
+        User targetUser = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(phoneNumber)
+                .orElseThrow(() -> new NoSuchElementException("Phone number not found"));
+        return UserInfoConverter.from(targetUser);
+    }
+
 
 }

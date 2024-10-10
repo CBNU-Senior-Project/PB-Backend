@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhishingRequest {
+public class SearchPhishingRequest {
     private PhishingType phishingType;
     private String value;
-    private String content;
+
 }

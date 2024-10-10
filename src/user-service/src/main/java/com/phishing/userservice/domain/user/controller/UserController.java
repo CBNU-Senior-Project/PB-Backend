@@ -76,6 +76,13 @@ public class UserController {
         return ResponseEntity.ok(userService.viewUserName(userId));
     }
 
+    @Tag(name = "전화번호로 회원 ID 조회", description = "전화번호를 통해 회원 ID를 조회합니다.")
+    @GetMapping("/users/phone/{phoneNumber}")
+    public ResponseEntity<UserInfoResponse> viewUserIdByPhoneNumber(@PathVariable @Valid String phoneNumber) {
+        return ResponseEntity.ok(userService.findUserIdByPhoneNumber(phoneNumber));
+    }
+
+
 
 
 }

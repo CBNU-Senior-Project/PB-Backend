@@ -1,15 +1,21 @@
-package com.phishing.userservice.domain.phish.payload.request;
+package com.phishing.userservice.domain.phish.payload.response;
 
 import com.phishing.userservice.domain.phish.domain.PhishingType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.time.LocalDateTime;
+
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhishingRequest {
+public class SearchPhishingResponse {
+
+    private Long phishingId;
     private PhishingType phishingType;
     private String value;
     private String content;
+    private LocalDateTime createdAt;
+
 }

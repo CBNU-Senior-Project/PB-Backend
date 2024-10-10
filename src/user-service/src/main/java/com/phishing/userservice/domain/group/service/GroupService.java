@@ -51,7 +51,7 @@ public class GroupService {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new NoSuchElementException("Sender not found"));
 
-        User receiver = userRepository.findById(request.receiverId())
+        User receiver = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(request.receiverPhoneNumber())
                 .orElseThrow(() -> new NoSuchElementException("Receiver not found"));
 
         Invitation invitation = Invitation.create(group, sender, receiver);
@@ -81,6 +81,7 @@ public class GroupService {
                 .group(group)
                 .user(user)
                 .isAdmin(false)
+                .nickname(user.getUserInfo().getNickname())  // 닉네임 저장
                 .build();
 
         groupMemberRepository.save(groupMember);
@@ -148,6 +149,22 @@ public class GroupService {
         // 그룹에서 멤버 제거
         groupMemberRepository.delete(groupMemberToRemove);
     }
+
+    public void editGroupMemberNickname(Long groupId, Long adminId, Long memberId, String newNickname) {
+        // 그룹장 확인
+        if (!isGroupAdmin(groupId, adminId)) {
+            throw new SecurityException("Only group admins can edit member nicknames.");
+        }
+
+        // 수정할 멤버 확인
+        GroupMember groupMember = groupMemberRepository.findByGroup_GroupIdAndUser_UserId(groupId, memberId)
+                .orElseThrow(() -> new NoSuchElementException("Group member not found"));
+
+        // 닉네임 수정
+        groupMember.setNickname(newNickname);
+        groupMemberRepository.save(groupMember);
+    }
+
 
 
 

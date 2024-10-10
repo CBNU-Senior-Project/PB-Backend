@@ -3,10 +3,12 @@ package com.phishing.userservice.domain.phish.service;
 import com.phishing.userservice.domain.phish.domain.Phishing;
 import com.phishing.userservice.domain.phish.domain.PhishingType;
 import com.phishing.userservice.domain.phish.payload.response.PhishingResponse;
+import com.phishing.userservice.domain.phish.payload.response.SearchPhishingResponse;
 import com.phishing.userservice.domain.phish.repository.PhishingRepository;
 import com.phishing.userservice.domain.user.domain.User;
 import com.phishing.userservice.domain.user.domain.UserRole;
 import com.phishing.userservice.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +24,11 @@ public class PhishingService {
     private final PhishingRepository phishingRepository;
     private final UserRepository userRepository;
 
-    public void addPhishingData(Long userId, PhishingType phishingType, String value) {
+    public void addPhishingData(Long userId, PhishingType phishingType, String value,String content) {
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        Phishing phishing = Phishing.create(creator, phishingType, value);
+        Phishing phishing = Phishing.create(creator, phishingType, value,content);
         phishingRepository.save(phishing);
     }
 
@@ -40,16 +42,19 @@ public class PhishingService {
                 .collect(Collectors.toList());
     }
 
-    public List<PhishingResponse> searchPhishingData(PhishingType phishingType, String value) {
-        List<Phishing> phishingData = phishingRepository.findByPhishingTypeAndValue(phishingType, value);
-        return phishingData.stream()
-                .map(phishing -> new PhishingResponse(
-                        phishing.getPhishingId(),
-                        phishing.getPhishingType(),
-                        phishing.getValue()
-                ))
-                .collect(Collectors.toList());
+    public SearchPhishingResponse searchPhishingData(PhishingType phishingType, String value) {
+        Phishing phishingData = phishingRepository.findByPhishingTypeAndValue(phishingType, value)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피싱 데이터가 없습니다."));
+
+        return new SearchPhishingResponse(
+                phishingData.getPhishingId(),
+                phishingData.getPhishingType(),
+                phishingData.getValue(),
+                phishingData.getContent(),
+                phishingData.getCreatedAt()
+        );
     }
+
 
     public void deletePhishingData(Long userId, Long phishingId) {
         User user = userRepository.findById(userId)

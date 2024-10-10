@@ -2,6 +2,7 @@ package com.phishing.userservice.domain.group.controller;
 
 import com.phishing.userservice.domain.group.payload.request.CreateGroupRequest;
 import com.phishing.userservice.domain.group.payload.request.EditInviteRequest;
+import com.phishing.userservice.domain.group.payload.request.EditNicknameRequest;
 import com.phishing.userservice.domain.group.payload.request.InviteMemberRequest;
 import com.phishing.userservice.domain.group.payload.response.InvitationResponse;
 import com.phishing.userservice.domain.group.payload.response.MemberInfoResponse;
@@ -43,6 +44,8 @@ public class GroupController {
 
         return ResponseEntity.ok().build();
     }
+
+
 
     @Tag(name = "초대 수락 ", description = "초대가 ACCEPTED된 후 그룹에 멤버를 추가하는 API")
     @PatchMapping("/invitations/{invitationId}/status")
@@ -111,5 +114,21 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @Tag(name = "그룹 멤버 닉네임 수정", description = "그룹장이 특정 그룹 멤버의 닉네임을 수정하는 API")
+    @PatchMapping("/{groupId}/members/{memberId}/nickname")
+    public ResponseEntity<Void> editGroupMemberNickname(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long groupId,
+            @PathVariable Long memberId,
+            @RequestBody EditNicknameRequest request) {
+
+        Long adminId = tokenResolver.getAccessClaims(token);  // 토큰으로 그룹장 ID 가져오기
+
+        groupService.editGroupMemberNickname(groupId, adminId, memberId, request.getNickname());
+
+        return ResponseEntity.ok().build();
+    }
+
 
 }
