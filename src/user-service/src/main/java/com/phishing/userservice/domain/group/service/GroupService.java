@@ -88,11 +88,11 @@ public class GroupService {
     }
 
 
-    public List<MemberInfoResponse> getGroupMemberIds(Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new NoSuchElementException("Group not found"));
+    public List<MemberInfoResponse> getGroupMemberIds(Long userId) {
+        GroupMember target = groupMemberRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("Group member not found"));
 
-        List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(groupId);
+        List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(target.getGroup().getGroupId());
 
         return groupMembers.stream()
                 .map(groupMember -> new MemberInfoResponse(
