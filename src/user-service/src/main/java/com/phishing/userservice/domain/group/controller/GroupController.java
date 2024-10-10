@@ -57,9 +57,10 @@ public class GroupController {
     }
 
     @Tag(name = "그룹 멤버 조회", description = "그룹에 속한 멤버들의 userId, 이름, 전화번호 리스트를 조회하는 API")
-    @GetMapping("/{groupId}/members")
-    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(@PathVariable Long groupId) {
-        List<MemberInfoResponse> memberInfos = groupService.getGroupMemberIds(groupId);
+    @GetMapping("/group/members")
+    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(@RequestHeader("Authorization") String token) {
+        Long userId = tokenResolver.getAccessClaims(token);
+        List<MemberInfoResponse> memberInfos = groupService.getGroupMemberIds(userId);
         return ResponseEntity.ok(memberInfos);
     }
 
