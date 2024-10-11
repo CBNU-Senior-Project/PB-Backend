@@ -39,13 +39,27 @@ public class PhishingController {
         return ResponseEntity.ok(phishingData);
     }
 
-    @Tag(name = "피싱 데이터 검색", description = "ex) 0109929 입력 {피싱 데이터를 검색하는 API}")
-    @PostMapping("/search")
-    public ResponseEntity<SearchPhishingResponse> searchPhishingData(
+    @Tag(name = "피싱 데이터 검색", description = "피싱 타입과 값을 입력받아 해당 데이터를 조회하는 API")
+    @PostMapping("/search/type-and-value")
+    public ResponseEntity<List<PhishingResponse>> searchPhishingDataByTypeAndValue(
             @RequestBody SearchPhishingRequest request) {
-        SearchPhishingResponse result = phishingService.searchPhishingData(request.getPhishingType(), request.getValue());
+        List<PhishingResponse> result = phishingService.searchPhishingDataByTypeAndValue(request.getPhishingType(), request.getValue());
         return ResponseEntity.ok(result);
     }
+
+
+
+    @Tag(name = "피싱 데이터 세부사항 조회", description = "피싱 데이터를 조회하여 날짜와 내용을 리스트로 반환하는 API")
+    @GetMapping("/detail/search")
+    public ResponseEntity<List<SearchPhishingResponse>> searchPhishingData(
+            @RequestParam("phishingType") PhishingType phishingType, // PhishingType을 Enum으로 받음
+            @RequestParam("value") String value) {
+        // 서비스에서 정확히 일치하는 값을 검색한 결과를 받음
+        List<SearchPhishingResponse> result = phishingService.searchPhishingData(phishingType, value);
+        return ResponseEntity.ok(result);
+    }
+
+
 
 
     @Tag(name = "피싱 데이터 삭제", description = "피싱 데이터를 삭제하는 API")

@@ -41,7 +41,6 @@ public class GroupController {
     public ResponseEntity<Void> inviteMember(@RequestHeader("Authorization") String token, @PathVariable Long groupId, @RequestBody InviteMemberRequest request) {
         Long senderId = tokenResolver.getAccessClaims(token);
         groupService.inviteMember(groupId, senderId, request);
-
         return ResponseEntity.ok().build();
     }
 

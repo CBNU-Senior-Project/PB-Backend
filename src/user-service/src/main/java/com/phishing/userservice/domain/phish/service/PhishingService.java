@@ -42,17 +42,36 @@ public class PhishingService {
                 .collect(Collectors.toList());
     }
 
-    public SearchPhishingResponse searchPhishingData(PhishingType phishingType, String value) {
-        Phishing phishingData = phishingRepository.findByPhishingTypeAndValue(phishingType, value)
-                .orElseThrow(() -> new EntityNotFoundException("해당 피싱 데이터가 없습니다."));
+    public List<SearchPhishingResponse> searchPhishingData(PhishingType phishingType, String value) {
+        // 정확히 일치하는 피싱 데이터를 리스트로 가져옴
+        List<Phishing> phishingDataList = phishingRepository.findByPhishingTypeAndValue(phishingType, value);
 
-        return new SearchPhishingResponse(
-                phishingData.getPhishingId(),
-                phishingData.getPhishingType(),
-                phishingData.getValue(),
-                phishingData.getContent(),
-                phishingData.getCreatedAt()
-        );
+        if (phishingDataList.isEmpty()) {
+            throw new EntityNotFoundException("해당 타입과 값에 대한 데이터를 찾을 수 없습니다.");
+        }
+
+        // 각각의 데이터를 SearchPhishingResponse로 변환하여 리스트로 반환
+        return phishingDataList.stream()
+                .map(phishingData -> new SearchPhishingResponse(
+                        phishingData.getPhishingId(),
+                        phishingData.getPhishingType(),
+                        phishingData.getValue(),
+                        phishingData.getContent(),
+                        phishingData.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<PhishingResponse> searchPhishingDataByTypeAndValue(PhishingType phishingType, String value) {
+        List<Phishing> phishingDataList = phishingRepository.findByPhishingTypeAndValueContaining(phishingType, value);
+        return phishingDataList.stream()
+                .map(phishingData -> new PhishingResponse(
+                        phishingData.getPhishingId(),
+                        phishingData.getPhishingType(),
+                        phishingData.getValue()
+                ))
+                .collect(Collectors.toList());
     }
 
 
