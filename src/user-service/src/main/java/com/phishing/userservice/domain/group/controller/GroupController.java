@@ -129,5 +129,11 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/creator/{creatorId}/group-ids")
+    public ResponseEntity<List<Long>> getGroupIdsByCreator(@PathVariable Long creatorId) {
+        List<Long> groupIds = groupService.getGroupIdsByCreatorId(creatorId);
+        return ResponseEntity.ok(groupIds);
+    }
+
 
 }
