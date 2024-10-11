@@ -62,7 +62,6 @@ public class PhishingService {
                 .collect(Collectors.toList());
     }
 
-
     public List<PhishingResponse> searchPhishingDataByTypeAndValue(PhishingType phishingType, String value) {
         List<Phishing> phishingDataList = phishingRepository.findByPhishingTypeAndValueContaining(phishingType, value);
         return phishingDataList.stream()

@@ -165,6 +165,11 @@ public class GroupService {
         groupMemberRepository.save(groupMember);
     }
 
+    public List<Long> getGroupIdsByCreatorId(Long creatorId) {
+        List<Group> groups = groupRepository.findByCreator_UserId(creatorId);
+        return groups.stream().map(Group::getGroupId).collect(Collectors.toList());
+    }
+
 
 
 

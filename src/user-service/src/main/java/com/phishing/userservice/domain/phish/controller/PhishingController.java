@@ -50,14 +50,16 @@ public class PhishingController {
 
 
     @Tag(name = "피싱 데이터 세부사항 조회", description = "피싱 데이터를 조회하여 날짜와 내용을 리스트로 반환하는 API")
-    @GetMapping("/detail/search")
+    @PostMapping("/detail/search")
     public ResponseEntity<List<SearchPhishingResponse>> searchPhishingData(
-            @RequestParam("phishingType") PhishingType phishingType, // PhishingType을 Enum으로 받음
+            @RequestParam("phishingType") PhishingType phishingType,  // PhishingType을 Enum으로 받음
             @RequestParam("value") String value) {
+
         // 서비스에서 정확히 일치하는 값을 검색한 결과를 받음
         List<SearchPhishingResponse> result = phishingService.searchPhishingData(phishingType, value);
         return ResponseEntity.ok(result);
     }
+
 
 
 
