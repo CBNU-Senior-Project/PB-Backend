@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.phishing.common.payload.Passport;
 import com.phishing.userservice.domain.user.payload.request.EditProfileRequest;
 import com.phishing.userservice.domain.user.payload.request.SignUpRequest;
+import com.phishing.userservice.domain.user.payload.response.UserIdResponse;
 import com.phishing.userservice.domain.user.payload.response.UserInfoResponse;
 import com.phishing.userservice.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,7 +79,7 @@ public class UserController {
 
     @Tag(name = "전화번호로 회원 ID 조회", description = "전화번호를 통해 회원 ID를 조회합니다.")
     @GetMapping("/users/phone/{phoneNumber}")
-    public ResponseEntity<UserInfoResponse> viewUserIdByPhoneNumber(@PathVariable @Valid String phoneNumber) {
+    public ResponseEntity<UserIdResponse> viewUserIdByPhoneNumber(@PathVariable @Valid String phoneNumber) {
         return ResponseEntity.ok(userService.findUserIdByPhoneNumber(phoneNumber));
     }
 

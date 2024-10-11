@@ -7,10 +7,12 @@ import com.phishing.userservice.domain.user.domain.User;
 import com.phishing.userservice.domain.user.exception.exceptions.DuplicateEmailException;
 import com.phishing.userservice.domain.user.payload.request.EditProfileRequest;
 import com.phishing.userservice.domain.user.payload.request.SignUpRequest;
+import com.phishing.userservice.domain.user.payload.response.UserIdResponse;
 import com.phishing.userservice.domain.user.payload.response.UserInfoResponse;
 import com.phishing.userservice.domain.user.repository.UserRepository;
 
 import com.phishing.userservice.domain.user.util.UserInfoConverter;
+import com.phishing.userservice.domain.user.util.UserResponseConverter;
 import com.phishing.userservice.global.component.token.TokenResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,10 +79,10 @@ public class UserService {
         return UserInfoConverter.from(targetUser);
     }
 
-    public UserInfoResponse findUserIdByPhoneNumber(String phoneNumber) {
+    public UserIdResponse findUserIdByPhoneNumber(String phoneNumber) {
         User targetUser = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(phoneNumber)
                 .orElseThrow(() -> new NoSuchElementException("Phone number not found"));
-        return UserInfoConverter.from(targetUser);
+        return UserResponseConverter.from(targetUser);
     }
 
 
