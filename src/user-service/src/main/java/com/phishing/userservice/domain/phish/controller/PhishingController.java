@@ -1,5 +1,8 @@
 package com.phishing.userservice.domain.phish.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phishing.common.payload.Passport;
 import com.phishing.userservice.domain.phish.domain.PhishingType;
 import com.phishing.userservice.domain.phish.payload.request.PhishingRequest;
 import com.phishing.userservice.domain.phish.payload.request.SearchPhishingRequest;
@@ -19,14 +22,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PhishingController {
     private final PhishingService phishingService;
-    private final TokenResolver tokenResolver;
+   //private final TokenResolver tokenResolver;
+    private final ObjectMapper objectMapper;
 
     @Tag(name = "피싱 데이터 추가", description = "피싱 계좌, 번호, URL을 추가하는 API")
     @PostMapping("/add")
     public ResponseEntity<Void> addPhishingData(
-            @RequestHeader("Authorization") String token,
-            @RequestBody PhishingRequest request) {
-        Long userId = tokenResolver.getAccessClaims(token);
+            @RequestHeader("X-Authorization") String token,
+            @RequestBody PhishingRequest request) throws JsonProcessingException {
+        Passport passport = objectMapper.readValue(token, Passport.class);
+       Long userId = passport.userId();
+        //Long userId = tokenResolver.getAccessClaims(token);
         phishingService.addPhishingData(userId, request.getPhishingType(), request.getValue(),request.getContent());
         return ResponseEntity.ok().build();
     }
@@ -67,9 +73,12 @@ public class PhishingController {
     @Tag(name = "피싱 데이터 삭제", description = "피싱 데이터를 삭제하는 API")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePhishingData(
-            @RequestHeader("Authorization") String token,
-            @PathVariable("id") Long phishingId) {
-        Long userId = tokenResolver.getAccessClaims(token);
+            @RequestHeader("X-Authorization") String token,
+            @PathVariable("id") Long phishingId) throws JsonProcessingException {
+
+        Passport passport = objectMapper.readValue(token, Passport.class);
+        Long userId = passport.userId();
+        //Long userId = tokenResolver.getAccessClaims(token);
         phishingService.deletePhishingData(userId, phishingId);
         return ResponseEntity.ok().build();
     }
