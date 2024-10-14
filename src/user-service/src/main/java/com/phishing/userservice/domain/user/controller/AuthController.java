@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user/api/v1")
+@RequestMapping("/user/api/v1/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthController {

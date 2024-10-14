@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/phish/api/v1")
+@RequestMapping("/user/api/v1/phish")
 @RequiredArgsConstructor
 public class PhishingController {
     private final PhishingService phishingService;

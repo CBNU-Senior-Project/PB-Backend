@@ -29,6 +29,7 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
     private final SaveNotificationPort saveNotificationPort;
     private final SaveNotiTrackingPort saveNotiTrackingPort;
 
+    //To do: 알림 내용 변경 : "그룹원 '홍길동'님이 보이스피싱 의심 전화를 받고있습니다. 이런 식으로 멤버의 이름도 포함
     @Transactional
     @Override
     public void sendNotification(SendNotificationEvent sendNotificationEvent) {
