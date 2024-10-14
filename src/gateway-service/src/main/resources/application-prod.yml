@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: USER-SERVER
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+          filters:
+            - AuthenticationFilter
+        - id: NOTI-SERVER
+          uri: lb://NOTI-SERVICE
+          predicates:
+            - Path=/noti/**
+          filters:
+            - AuthenticationFilter
+
+restclient:
+  baseuri: http://${GATEWAY_HOST}:${GATEWAY_PORT}
+
+logging:
+  level:
+    feign: DEBUG
