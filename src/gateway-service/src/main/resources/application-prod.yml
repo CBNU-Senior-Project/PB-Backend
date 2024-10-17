@@ -26,6 +26,12 @@ spring:
             - Path=/noti/**
           filters:
             - AuthenticationFilter
+        - id: PREDICT-SERVER
+          uri: lb://PREDICT-SERVICE
+          predicates:
+            - Path=/predict/**
+          filters:
+            - AuthenticationFilter
 
 restclient:
   baseuri: http://${GATEWAY_HOST}:${GATEWAY_PORT}
