@@ -36,3 +36,6 @@ logging:
     org:
       springframework:
         security: DEBUG
+news:
+  crawling:
+    baseurl: ${CRAWLING_BASEURL}

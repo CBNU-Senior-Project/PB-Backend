@@ -117,7 +117,7 @@ public class GroupService {
                 ))
                 .collect(Collectors.toList());
     }
-    @Scheduled(fixedRate = 5 * 60 * 1000) // 5분마다 실행
+
     public void deleteRejectedInvitation(Long invitationId) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new NoSuchElementException("Invitation not found"));
