@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -40,16 +41,24 @@ public class UserService {
 
     public void signUp(SignUpRequest request) {
         checkEmail(request.userCertification().getEmail());
+
+        // 랜덤 인증 코드 생성
+        String verificationCode = String.valueOf(new Random().nextInt(999999));
+
+        // 인증 코드 전송
+        twilioService.sendVerificationCode(request.userInfo().getPhnum(), verificationCode);
+
         User user = User.signUp(
                 request.userCertification().getEmail(),
                 passwordEncoder.encode(request.userCertification().getPassword()),
                 request.userInfo(),
                 request.userRole()
         );
+
+        // 여기서 인증 코드 검증 로직을 추가할 수 있습니다.
+
         userRepository.save(user);
-
     }
-
     public void editProfile(String token, EditProfileRequest request) throws JsonProcessingException {
         Passport userInfo = objectMapper.readValue(token, Passport.class);
         User targetUser = userRepository.findByUserIdAndIsDeletedIsFalse(userInfo.userId())

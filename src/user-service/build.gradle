@@ -45,7 +45,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	//Validation
+	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// Spring Data JPA
@@ -76,8 +76,10 @@ dependencies {
 	// Spring Cloud Eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+
 	//Selenium for crawling
 	implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
+
 
 }
 
