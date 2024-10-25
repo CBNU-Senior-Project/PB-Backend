@@ -63,12 +63,17 @@ public class GroupController {
     }
 
     @Tag(name = "그룹 멤버 조회", description = "그룹에 속한 멤버들의 userId, 이름, 전화번호 리스트를 조회하는 API")
-    @GetMapping("/group/members")
-    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(@RequestHeader("X-Authorization") String token) throws JsonProcessingException {
+    @GetMapping("/group/{groupId}/members")
+    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(
+            @RequestHeader("X-Authorization") String token,
+            @PathVariable Long groupId) throws JsonProcessingException {
+
         Long userId = objectMapper.readValue(token, Passport.class).userId();
-        List<MemberInfoResponse> memberInfos = groupService.getGroupMemberIds(userId);
+        List<MemberInfoResponse> memberInfos = groupService.getGroupMembersByGroupId(groupId);
+
         return ResponseEntity.ok(memberInfos);
     }
+
 
 
     @Tag(name = "초대장 조회", description = "지정된 사용자의 초대장 리스트를 조회하는 API")

@@ -54,6 +54,20 @@ public class GroupService {
         User receiver = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(request.receiverPhoneNumber())
                 .orElseThrow(() -> new NoSuchElementException("Receiver not found"));
 
+
+        if (groupMemberRepository.existsByGroup_GroupIdAndUser_UserId(groupId, receiver.getUserId())) {
+            throw new IllegalArgumentException("User is already a member of the group.");
+        }
+
+
+        boolean invitationExists = invitationRepository.existsByGroup_GroupIdAndReceiver_UserIdAndStatus(
+                groupId, receiver.getUserId(), "PENDING"
+        );
+        if (invitationExists) {
+            throw new IllegalArgumentException("An invitation to this user is already pending.");
+        }
+
+
         Invitation invitation = Invitation.create(group, sender, receiver);
         invitationRepository.save(invitation);
     }
@@ -77,22 +91,29 @@ public class GroupService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
+        boolean isAlreadyMember = groupMemberRepository.existsByGroup_GroupIdAndUser_UserId(groupId, userId);
+        if (isAlreadyMember) {
+            throw new IllegalArgumentException("User is already a member of this group.");
+        }
+
         GroupMember groupMember = GroupMember.builder()
                 .group(group)
                 .user(user)
                 .isAdmin(false)
-                .nickname(user.getUserInfo().getNickname())  // 닉네임 저장
+                .nickname(user.getUserInfo().getNickname())
                 .build();
 
         groupMemberRepository.save(groupMember);
     }
 
 
-    public List<MemberInfoResponse> getGroupMemberIds(Long userId) {
-        GroupMember target = groupMemberRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("Group member not found"));
 
-        List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(target.getGroup().getGroupId());
+    public List<MemberInfoResponse> getGroupMembersByGroupId(Long groupId) {
+        List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(groupId);
+
+        if (groupMembers.isEmpty()) {
+            throw new NoSuchElementException("No members found in the specified group.");
+        }
 
         return groupMembers.stream()
                 .map(groupMember -> new MemberInfoResponse(
