@@ -158,16 +158,20 @@ public class GroupService {
     }
 
     public void removeGroupMember(Long groupId, Long userId, Long memberIdToRemove) {
-        // 그룹장 확인
-        if (!isGroupAdmin(groupId, userId)) {
-            throw new SecurityException("Only group admins can remove members.");
+        // 1. 그룹장이 맞는지 확인 (creator인지 체크)
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new NoSuchElementException("Group not found"));
+
+        if (!group.getCreator().getUserId().equals(userId)) {
+            throw new SecurityException("Only the group creator can remove members.");
         }
 
-        // 그룹에서 제거할 멤버 확인
-        GroupMember groupMemberToRemove = groupMemberRepository.findByGroup_GroupIdAndUser_UserId(groupId, memberIdToRemove)
+        // 2. 그룹원 존재 여부 확인 (group_members 테이블에서 user_id로 조회)
+        GroupMember groupMemberToRemove = groupMemberRepository
+                .findByGroup_GroupIdAndUser_UserId(groupId, memberIdToRemove)
                 .orElseThrow(() -> new NoSuchElementException("Group member not found"));
 
-        // 그룹에서 멤버 제거
+        // 3. 그룹원 삭제
         groupMemberRepository.delete(groupMemberToRemove);
     }
 
