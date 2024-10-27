@@ -125,16 +125,16 @@ public class GroupController {
             @PathVariable Long memberId) throws JsonProcessingException {
 
         Passport passport = objectMapper.readValue(token, Passport.class);
-         Long userId = passport.userId();
-        //Long userId = tokenResolver.getAccessClaims(token);
+        Long userId = passport.userId();  // 토큰에서 유저 ID 추출
 
         try {
+            // 그룹원 삭제 서비스 호출
             groupService.removeGroupMember(groupId, userId, memberId);
             return ResponseEntity.ok().build();
         } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();  // 권한 없음
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // 멤버 없음
         }
     }
 
