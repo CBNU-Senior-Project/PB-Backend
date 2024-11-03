@@ -108,7 +108,7 @@ public class GroupService {
 
 
 
-    public List<MemberInfoResponse> getGroupMembersByGroupId(Long groupId) {
+        public List<MemberInfoResponse> getGroupMembersByGroupId(Long groupId) {
         List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(groupId);
 
         if (groupMembers.isEmpty()) {
@@ -118,7 +118,7 @@ public class GroupService {
         return groupMembers.stream()
                 .map(groupMember -> new MemberInfoResponse(
                         groupMember.getUser().getUserId(),
-                        groupMember.getUser().getUserInfo().getNickname(),
+                        groupMember.getNickname(),
                         groupMember.getUser().getUserInfo().getPhnum()
                 ))
                 .collect(Collectors.toList());
