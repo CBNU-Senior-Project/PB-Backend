@@ -175,20 +175,25 @@ public class GroupService {
         groupMemberRepository.delete(groupMemberToRemove);
     }
 
-    public void editGroupMemberNickname(Long groupId, Long adminId, Long memberId, String newNickname) {
-        // 그룹장 확인
-        if (!isGroupAdmin(groupId, adminId)) {
-            throw new SecurityException("Only group admins can edit member nicknames.");
+    public void editGroupMemberNickname(Long groupId, Long adminId, Long userId, String newNickname) {
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new NoSuchElementException("Group not found"));
+
+        if (!group.getCreator().getUserId().equals(adminId)) {
+            throw new SecurityException("Only the group creator can edit member nicknames.");
         }
 
-        // 수정할 멤버 확인
-        GroupMember groupMember = groupMemberRepository.findByGroup_GroupIdAndUser_UserId(groupId, memberId)
+        // 수정할 멤버 확인 - groupId와 userId로 GroupMember 찾기
+        GroupMember groupMember = groupMemberRepository.findByGroup_GroupIdAndUser_UserId(groupId, userId)
                 .orElseThrow(() -> new NoSuchElementException("Group member not found"));
 
         // 닉네임 수정
         groupMember.setNickname(newNickname);
         groupMemberRepository.save(groupMember);
     }
+
+
 
     public List<Long> getGroupIdsByCreatorId(Long creatorId) {
         List<Group> groups = groupRepository.findByCreator_UserId(creatorId);

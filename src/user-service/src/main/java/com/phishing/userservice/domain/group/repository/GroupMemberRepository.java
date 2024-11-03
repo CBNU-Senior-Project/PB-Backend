@@ -14,9 +14,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
 
     boolean existsByGroup_GroupIdAndUser_UserId(Long groupId, Long userId);
 
+    // 불필요한 메서드 제거
     Optional<GroupMember> findByGroup_GroupIdAndUser_UserId(Long groupId, Long userId);
 
     Optional<GroupMember> findByUser_UserId(Long userId);
-
 }
-
