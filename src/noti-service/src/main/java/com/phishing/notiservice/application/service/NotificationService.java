@@ -1,5 +1,6 @@
 package com.phishing.notiservice.application.service;
 
+import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
@@ -35,10 +36,12 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
     public void sendNotification(SendNotificationEvent sendNotificationEvent) {
         log.info("Send notification to user: {}, isPhishing: {}, probability: {}",
                 sendNotificationEvent.userId(), sendNotificationEvent.isPhishing(), sendNotificationEvent.probability());
+        if(!sendNotificationEvent.isPhishing()){
+            return;
+        }
         Notification targetNoti = Notification.create(NotiPayload.createPredFinNoti(sendNotificationEvent.probability()), NotiType.POTENTIAL_PHISHING_ALERT,
                 sendNotificationEvent.userId(),
                 loadNotiUserPort.loadNotiUser(sendNotificationEvent.userId()).getGroupId());
-        saveNotificationPort.saveNotification(targetNoti);
         List<NotiUser> targetUsers = loadNotiUserPort.loadNotiUserByGroupId(targetNoti.getTargetGroupId());
         List<Message> messages = new ArrayList<>();
         List<NotiTracking> trackings = new ArrayList<>();
@@ -46,6 +49,8 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
             Message targetMessage =  Message.builder()
                     .setNotification(createNotification(targetNoti.getPayload().getTitle(), targetNoti.getPayload().getMessage()))
                     .setToken(user.getDeviceInfo().getToken())
+                    .putData("title", targetNoti.getPayload().getTitle())
+                    .putData("body", targetNoti.getPayload().getMessage())
                     .putData("userId", user.getUserId().toString())
                     .build();
             messages.add(targetMessage);
@@ -66,7 +71,7 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
                 trackings.add(tracking);
             }
         }
-
+        saveNotificationPort.saveNotification(targetNoti);
         saveNotiTrackingPort.saveNotiTracking(trackings);
     }
 
