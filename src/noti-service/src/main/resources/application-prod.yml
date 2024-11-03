@@ -1,0 +1,32 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: noti-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: jdbc:mysql://${DB_HOSTNAME}/phishing?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+  kafka:
+    consumer:
+      group-id: noti-service
+      auto-offset-reset: earliest
+    bootstrap:
+      servers: ${KAFKA_HOSTNAME}:${KAFKA_PORT}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOSTNAME}/eureka/

@@ -10,7 +10,7 @@ import lombok.Setter;
 public class PredictFinishedEvent implements KafkaEvent {
 
     private Long userId;
-    private boolean isPhishing;
+    private String isPhishing;
     private String probability;
 
     @Override

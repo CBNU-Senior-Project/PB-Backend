@@ -2,7 +2,7 @@ package com.phishing.notiservice.application.port.inbound;
 
 public record SendNotificationEvent (
         Long userId,
-        boolean isPhishing,
+        Boolean isPhishing,
         String probability
 ){
 }
