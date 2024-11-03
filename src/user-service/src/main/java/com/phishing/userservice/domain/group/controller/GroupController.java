@@ -137,22 +137,22 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // 멤버 없음
         }
     }
-
     @Tag(name = "그룹 멤버 닉네임 수정", description = "그룹장이 특정 그룹 멤버의 닉네임을 수정하는 API")
-    @PatchMapping("/{groupId}/members/{memberId}/nickname")
+    @PatchMapping("/{groupId}/members/{userId}/nickname")
     public ResponseEntity<Void> editGroupMemberNickname(
             @RequestHeader("X-Authorization") String token,
             @PathVariable Long groupId,
-            @PathVariable Long memberId,
+            @PathVariable Long userId,
             @RequestBody EditNicknameRequest request) throws JsonProcessingException {
 
         Passport passport = objectMapper.readValue(token, Passport.class);
-        Long  adminId = passport.userId();
-        //Long adminId = tokenResolver.getAccessClaims(token);  // 토큰으로 그룹장 ID 가져오기
-        groupService.editGroupMemberNickname(groupId, adminId, memberId, request.getNickname());
+        Long adminId = passport.userId();
+
+        groupService.editGroupMemberNickname(groupId, adminId, userId, request.getNickname());
 
         return ResponseEntity.ok().build();
     }
+
 
     @GetMapping("/creator/{creatorId}/group-ids")
     public ResponseEntity<List<Long>> getGroupIdsByCreator(@PathVariable Long creatorId) {
