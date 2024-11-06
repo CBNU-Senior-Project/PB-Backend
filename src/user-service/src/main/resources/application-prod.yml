@@ -18,6 +18,13 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+  cloud:
+    gcp:
+      credentials:
+        location: pbblock-efd21425a299.json
+      project-id: pbblock
+      storage:
+        bucket: pbimage
 eureka:
   client:
     fetch-registry: true
