@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_groups")
+@Table(name = "user_groups")  // 테이블 이름이 'group'이 예약어일 수 있으므로 'groups'로 지정
 public class Group extends BaseEntity {
 
     @Id

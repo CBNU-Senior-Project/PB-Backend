@@ -2,7 +2,6 @@ package com.phishing.notiservice.adapter.outbound.persistence;
 
 import com.phishing.notiservice.domain.NotiPayload;
 import com.phishing.notiservice.domain.NotiType;
-import com.phishing.notiservice.domain.NotiUserInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -26,14 +25,14 @@ public class NotificationEntity extends BaseEntity {
     @Column(name = "noti_type")
     private NotiType notiType;
 
-    @Embedded
-    private NotiUserInfo userInfo;
+    @Column(name = "target_group_id")
+    private Long targetGroupId;
 
-    public static NotificationEntity create(NotiPayload payload, NotiType notiType, NotiUserInfo userInfo) {
+    public static NotificationEntity create(NotiPayload payload, NotiType notiType, Long targetGroupId) {
         return NotificationEntity.builder()
                 .payload(payload)
                 .notiType(notiType)
-                .userInfo(userInfo)
+                .targetGroupId(targetGroupId)
                 .build();
     }
 

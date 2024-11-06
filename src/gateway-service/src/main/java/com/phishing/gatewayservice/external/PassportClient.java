@@ -30,7 +30,7 @@ public class PassportClient {
     public String generatePassport(String token) {
         return restClient
                 .post()
-                .uri(baseUri + "/user/api/v1/auth/passport")
+                .uri(baseUri + "/user/api/v1/passport")
                 .header(AUTHORIZATION_HEADER_NAME, token)
                 .retrieve()
                 .toEntity(String.class)

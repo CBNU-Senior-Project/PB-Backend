@@ -11,11 +11,9 @@ import java.util.Optional;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
 
     List<GroupMember> findByGroup_GroupId(Long groupId);
-
-    boolean existsByGroup_GroupIdAndUser_UserId(Long groupId, Long userId);
-
-    // 불필요한 메서드 제거
     Optional<GroupMember> findByGroup_GroupIdAndUser_UserId(Long groupId, Long userId);
 
-    Optional<GroupMember> findByUser_UserId(Long userId);
+
+
 }
+
