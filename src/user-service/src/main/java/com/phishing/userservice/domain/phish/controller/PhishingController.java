@@ -3,6 +3,7 @@ package com.phishing.userservice.domain.phish.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phishing.common.payload.Passport;
+import com.phishing.userservice.domain.phish.domain.Phishing;
 import com.phishing.userservice.domain.phish.domain.PhishingType;
 import com.phishing.userservice.domain.phish.payload.request.PhishingRequest;
 import com.phishing.userservice.domain.phish.payload.request.SearchPhishingRequest;
@@ -81,5 +82,12 @@ public class PhishingController {
         //Long userId = tokenResolver.getAccessClaims(token);
         phishingService.deletePhishingData(userId, phishingId);
         return ResponseEntity.ok().build();
+    }
+
+    @Tag(name = "피싱 데이터 2개씩 조회", description = "피싱 데이터를 타입별로 최신순으로 2개씩 조회하는 API")
+    @GetMapping("/latest")
+    public ResponseEntity<List<SearchPhishingResponse>> getLatestTwoPerPhishingType() {
+        List<SearchPhishingResponse> result = phishingService.findLatestTwoPerPhishingType();
+        return ResponseEntity.ok(result);
     }
 }

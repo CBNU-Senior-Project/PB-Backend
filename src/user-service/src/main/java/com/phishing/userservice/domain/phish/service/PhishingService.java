@@ -10,9 +10,11 @@ import com.phishing.userservice.domain.user.domain.UserRole;
 import com.phishing.userservice.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -86,5 +88,39 @@ public class PhishingService {
                 .orElseThrow(() -> new NoSuchElementException("Phishing data not found"));
 
         phishingRepository.delete(phishing);
+    }
+
+    public List<SearchPhishingResponse> findLatestTwoPerPhishingType() {
+        List<SearchPhishingResponse> result = new ArrayList<>();
+
+        List<Phishing> urlResult = phishingRepository.findTop2ByPhishingTypeOrderByCreatedDateDesc(PhishingType.URL, PageRequest.of(0, 2));
+        List<Phishing> accountResult = phishingRepository.findTop2ByPhishingTypeOrderByCreatedDateDesc(PhishingType.ACCOUNT, PageRequest.of(0, 2));
+        List<Phishing> phoneResult = phishingRepository.findTop2ByPhishingTypeOrderByCreatedDateDesc(PhishingType.PHONE, PageRequest.of(0, 2));
+
+        result.addAll(urlResult.stream().map(phishing -> new SearchPhishingResponse(
+                phishing.getPhishingId(),
+                phishing.getPhishingType(),
+                phishing.getValue(),
+                phishing.getContent(),
+                phishing.getCreatedAt()
+        )).collect(Collectors.toList()));
+
+        result.addAll(accountResult.stream().map(phishing -> new SearchPhishingResponse(
+                phishing.getPhishingId(),
+                phishing.getPhishingType(),
+                phishing.getValue(),
+                phishing.getContent(),
+                phishing.getCreatedAt()
+        )).collect(Collectors.toList()));
+
+        result.addAll(phoneResult.stream().map(phishing -> new SearchPhishingResponse(
+                phishing.getPhishingId(),
+                phishing.getPhishingType(),
+                phishing.getValue(),
+                phishing.getContent(),
+                phishing.getCreatedAt()
+        )).collect(Collectors.toList()));
+
+        return result;
     }
 }

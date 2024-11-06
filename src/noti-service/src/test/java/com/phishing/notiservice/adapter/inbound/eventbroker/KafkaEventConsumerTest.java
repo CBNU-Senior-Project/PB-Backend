@@ -50,7 +50,7 @@ class KafkaEventConsumerTest {
         //Given
         PredictFinishedEvent predictFinishedEvent = new PredictFinishedEvent();
         predictFinishedEvent.setUserId(123L);
-        predictFinishedEvent.setPhishing(true);
+        predictFinishedEvent.setIsPhishing("true");
         predictFinishedEvent.setProbability("0.95");
         //When
         kafkaTemplate.send("phishing-detection", predictFinishedEvent);
@@ -61,7 +61,7 @@ class KafkaEventConsumerTest {
         //Then
         SendNotificationEvent sendNotificationEvent = new SendNotificationEvent(
                 predictFinishedEvent.getUserId(),
-                predictFinishedEvent.isPhishing(),
+                predictFinishedEvent.getIsPhishing().equals("true"),
                 predictFinishedEvent.getProbability()
         );
         verify(sendNotificationUsecase, times(1)).sendNotification(sendNotificationEvent);
