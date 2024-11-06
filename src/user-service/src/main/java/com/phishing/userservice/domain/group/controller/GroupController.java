@@ -3,12 +3,10 @@ package com.phishing.userservice.domain.group.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phishing.common.payload.Passport;
-import com.phishing.userservice.domain.group.payload.request.CreateGroupRequest;
-import com.phishing.userservice.domain.group.payload.request.EditInviteRequest;
-import com.phishing.userservice.domain.group.payload.request.EditNicknameRequest;
-import com.phishing.userservice.domain.group.payload.request.InviteMemberRequest;
+import com.phishing.userservice.domain.group.payload.request.*;
 import com.phishing.userservice.domain.group.payload.response.InvitationResponse;
 import com.phishing.userservice.domain.group.payload.response.MemberInfoResponse;
+import com.phishing.userservice.domain.group.service.GcsService;
 import com.phishing.userservice.domain.group.service.GroupService;
 import com.phishing.userservice.global.component.token.TokenResolver;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +25,8 @@ public class GroupController {
     private final GroupService groupService;
     //private final TokenResolver tokenResolver;
     private final ObjectMapper objectMapper;
+
+    private final GcsService gcsService;
 
     @Tag(name = "그룹 생성", description = "그룹 생성 API, AccessToken 필요")
     @PostMapping
@@ -62,17 +62,6 @@ public class GroupController {
         return ResponseEntity.ok().build();
     }
 
-    @Tag(name = "그룹 멤버 조회", description = "그룹에 속한 멤버들의 userId, 이름, 전화번호 리스트를 조회하는 API")
-    @GetMapping("/group/{groupId}/members")
-    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(
-            @RequestHeader("X-Authorization") String token,
-            @PathVariable Long groupId) throws JsonProcessingException {
-
-        Long userId = objectMapper.readValue(token, Passport.class).userId();
-        List<MemberInfoResponse> memberInfos = groupService.getGroupMembersByGroupId(groupId);
-
-        return ResponseEntity.ok(memberInfos);
-    }
 
 
 
@@ -152,6 +141,42 @@ public class GroupController {
 
         return ResponseEntity.ok().build();
     }
+    @Tag(name = "그룹 멤버 이미지 수정", description = "그룹장이 특정 그룹 멤버의 이미지를 수정하는 API")
+    @PatchMapping("/{groupId}/members/{userId}/image")
+    public ResponseEntity<String> editGroupMemberImage(
+            @RequestHeader("X-Authorization") String token,
+            @PathVariable Long groupId,
+            @PathVariable Long userId,
+            @RequestBody EditImageRequest request) throws JsonProcessingException {
+
+        Passport passport = objectMapper.readValue(token, Passport.class);
+        Long adminId = passport.userId();
+
+        // 클라이언트에서 받은 imagename을 사용하여 signed URL 생성
+        String signedUrl = gcsService.generateSignedUrl(request.getImagename());
+
+        // 그룹 멤버 이미지 수정
+        groupService.editGroupMemberImage(groupId, adminId, userId, request.getImagename());
+
+        // 생성된 signed URL을 응답으로 반환
+        return ResponseEntity.ok(signedUrl);
+    }
+
+
+
+    @Tag(name = "그룹 멤버 조회", description = "그룹에 속한 멤버들의 userId, 이름, 전화번호 리스트를 조회하는 API")
+    @GetMapping("/group/{groupId}/members")
+    public ResponseEntity<List<MemberInfoResponse>> getGroupMembers(
+            @RequestHeader("X-Authorization") String token,
+            @PathVariable Long groupId) throws JsonProcessingException {
+
+        Long userId = objectMapper.readValue(token, Passport.class).userId();
+        List<MemberInfoResponse> memberInfos = groupService.getGroupMembersByGroupId(groupId);
+
+        return ResponseEntity.ok(memberInfos);
+    }
+
+
 
 
     @GetMapping("/creator/{creatorId}/group-ids")

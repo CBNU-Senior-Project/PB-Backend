@@ -29,6 +29,7 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
+    private final GcsService gcsService;
 
     public void createGroup(CreateGroupRequest request, Long userId) {
         User creator = userRepository.findById(userId)
@@ -108,7 +109,7 @@ public class GroupService {
 
 
 
-        public List<MemberInfoResponse> getGroupMembersByGroupId(Long groupId) {
+    public List<MemberInfoResponse> getGroupMembersByGroupId(Long groupId) {
         List<GroupMember> groupMembers = groupMemberRepository.findByGroup_GroupId(groupId);
 
         if (groupMembers.isEmpty()) {
@@ -116,11 +117,15 @@ public class GroupService {
         }
 
         return groupMembers.stream()
-                .map(groupMember -> new MemberInfoResponse(
-                        groupMember.getUser().getUserId(),
-                        groupMember.getNickname(),
-                        groupMember.getUser().getUserInfo().getPhnum()
-                ))
+                .map(groupMember -> {
+                    String imageUrl = gcsService.downloadImage(groupMember.getImagename()); // 다운로드 링크 생성
+                    return new MemberInfoResponse(
+                            groupMember.getUser().getUserId(),
+                            groupMember.getNickname(),
+                            groupMember.getUser().getUserInfo().getPhnum(),
+                            imageUrl // 추가된 URL
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -192,6 +197,25 @@ public class GroupService {
         groupMember.setNickname(newNickname);
         groupMemberRepository.save(groupMember);
     }
+
+    public void editGroupMemberImage(Long groupId, Long adminId, Long userId, String newImage) {
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new NoSuchElementException("Group not found"));
+
+        if (!group.getCreator().getUserId().equals(adminId)) {
+            throw new SecurityException("Only the group creator can edit member nicknames.");
+        }
+
+        // 수정할 멤버 확인 - groupId와 userId로 GroupMember 찾기
+        GroupMember groupMember = groupMemberRepository.findByGroup_GroupIdAndUser_UserId(groupId, userId)
+                .orElseThrow(() -> new NoSuchElementException("Group member not found"));
+
+        // 닉네임 수정
+        groupMember.setImagename(newImage);
+        groupMemberRepository.save(groupMember);
+    }
+
 
 
 
