@@ -34,8 +34,8 @@ public class GroupMember extends BaseEntity {
     private String nickname;  // 기본값은 null로 설정됨
 
 
-    @Column(name = "imagename", columnDefinition = "varchar(255) default 'default.jpg'")
-    private String imagename = "default.jpg"; // 필드 초기화
+    @Column(name = "imagename")
+    private String imagename; // 필드 초기화
 
     // Setters and other methods
     public void setIsAdmin(boolean isAdmin) {

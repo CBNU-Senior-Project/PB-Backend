@@ -101,6 +101,7 @@ public class GroupService {
                 .group(group)
                 .user(user)
                 .isAdmin(false)
+                .imagename("default.jpg")
                 .nickname(user.getUserInfo().getNickname())
                 .build();
 
