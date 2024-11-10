@@ -6,6 +6,7 @@ import com.phishing.common.payload.Passport;
 import com.phishing.userservice.domain.group.payload.request.*;
 import com.phishing.userservice.domain.group.payload.response.InvitationResponse;
 import com.phishing.userservice.domain.group.payload.response.MemberInfoResponse;
+import com.phishing.userservice.domain.group.payload.response.PutImageUrlResponse;
 import com.phishing.userservice.domain.group.service.GcsService;
 import com.phishing.userservice.domain.group.service.GroupService;
 import com.phishing.userservice.global.component.token.TokenResolver;
@@ -143,7 +144,7 @@ public class GroupController {
     }
     @Tag(name = "그룹 멤버 이미지 수정", description = "그룹장이 특정 그룹 멤버의 이미지를 수정하는 API")
     @PatchMapping("/{groupId}/members/{userId}/image")
-    public ResponseEntity<String> editGroupMemberImage(
+    public ResponseEntity<PutImageUrlResponse> editGroupMemberImage(
             @RequestHeader("X-Authorization") String token,
             @PathVariable Long groupId,
             @PathVariable Long userId,
@@ -154,12 +155,13 @@ public class GroupController {
 
         // 클라이언트에서 받은 imagename을 사용하여 signed URL 생성
         String signedUrl = gcsService.generateSignedUrl(request.getImagename());
+        PutImageUrlResponse response = new PutImageUrlResponse(signedUrl);
 
         // 그룹 멤버 이미지 수정
         groupService.editGroupMemberImage(groupId, adminId, userId, request.getImagename());
 
         // 생성된 signed URL을 응답으로 반환
-        return ResponseEntity.ok(signedUrl);
+        return ResponseEntity.ok(response);
     }
 
 

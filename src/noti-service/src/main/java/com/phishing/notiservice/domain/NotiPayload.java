@@ -15,7 +15,7 @@ public class NotiPayload {
     public static NotiPayload createPredFinNoti(String probablity) {
         return NotiPayload.builder()
                 .title("그룹원중 보이스피싱 의심 전화 감지")
-                .message("님에게 보이스피싱 의심 전화가 감지되었습니다.")
+                .message("그룹원 중 누군가 보이스피싱 의심 전화를 받았습니다.")
                 .build();
     }
 }

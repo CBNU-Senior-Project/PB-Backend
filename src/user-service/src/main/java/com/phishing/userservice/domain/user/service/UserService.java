@@ -39,19 +39,29 @@ public class UserService {
         }
     }
 
+    public void checkPhoneNumber(String phoneNumber) {
+        if (userRepository.existsByUserInfo_Phnum(phoneNumber)) {
+            throw new DuplicateEmailException("Phone number already exists");
+        }
+    }
+
     public void signUp(SignUpRequest request) {
-        checkEmail(request.userCertification().getEmail());
+        try {
+            checkEmail(request.userCertification().getEmail());
+            checkEmail(request.userInfo().getPhnum());
 
+            User user = User.signUp(
+                    request.userCertification().getEmail(),
+                    passwordEncoder.encode(request.userCertification().getPassword()),
+                    request.userInfo(),
+                    request.userRole()
+            );
 
-        User user = User.signUp(
-                request.userCertification().getEmail(),
-                passwordEncoder.encode(request.userCertification().getPassword()),
-                request.userInfo(),
-                request.userRole()
-        );
-
-
-        userRepository.save(user);
+            userRepository.save(user);
+        } catch (Exception e) {
+            log.error("Failed to sign up", e);
+            throw e;
+        }
     }
     public void editProfile(String token, EditProfileRequest request) throws JsonProcessingException {
         Passport userInfo = objectMapper.readValue(token, Passport.class);
