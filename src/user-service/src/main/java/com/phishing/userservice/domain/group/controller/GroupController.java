@@ -12,9 +12,11 @@ import com.phishing.userservice.domain.group.service.GroupService;
 import com.phishing.userservice.domain.user.domain.UserInfo;
 import com.phishing.userservice.global.component.token.TokenResolver;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/user/api/v1/groups")
 @RequiredArgsConstructor
+@Validated
 public class GroupController {
     private final GroupService groupService;
     //private final TokenResolver tokenResolver;
@@ -34,7 +37,7 @@ public class GroupController {
     @PostMapping
     public ResponseEntity<Void> createGroup(
             @RequestHeader("X-Authorization") String token,
-            @RequestBody CreateGroupRequest request) throws JsonProcessingException {
+            @RequestBody @Valid CreateGroupRequest request) throws JsonProcessingException {
 
 //        Long userId = tokenResolver.getAccessClaims(token);
         Passport passport = objectMapper.readValue(token, Passport.class);
@@ -45,7 +48,7 @@ public class GroupController {
 
     @Tag(name = "그룹원 초대 메시지 전송", description = "그룹장이 그룹원을 초대하는 API, AccessToken 필요")
     @PostMapping("/{groupId}/invite")
-    public ResponseEntity<Void> inviteMember(@RequestHeader("X-Authorization") String token, @PathVariable Long groupId, @RequestBody InviteMemberRequest request) throws JsonProcessingException {
+    public ResponseEntity<Void> inviteMember(@RequestHeader("X-Authorization") String token, @PathVariable Long groupId, @RequestBody @Valid InviteMemberRequest request) throws JsonProcessingException {
 
         Passport passport = objectMapper.readValue(token, Passport.class);
         //Long senderId = tokenResolver.getAccessClaims(token);
@@ -59,7 +62,7 @@ public class GroupController {
     @PatchMapping("/invitations/{invitationId}/status")
     public ResponseEntity<Void> updateInvitationStatusAndAddMember(
             @PathVariable Long invitationId,
-            @RequestBody EditInviteRequest request) {
+            @RequestBody @Valid EditInviteRequest request) {
         groupService.acceptInvitationAndAddToGroup(invitationId, request.getStatus());
         return ResponseEntity.ok().build();
     }
@@ -134,7 +137,7 @@ public class GroupController {
             @RequestHeader("X-Authorization") String token,
             @PathVariable Long groupId,
             @PathVariable Long userId,
-            @RequestBody EditNicknameRequest request) throws JsonProcessingException {
+            @RequestBody @Valid EditNicknameRequest request) throws JsonProcessingException {
 
         Passport passport = objectMapper.readValue(token, Passport.class);
         Long adminId = passport.userId();
@@ -149,7 +152,7 @@ public class GroupController {
             @RequestHeader("X-Authorization") String token,
             @PathVariable Long groupId,
             @PathVariable Long userId,
-            @RequestBody EditImageRequest request) throws JsonProcessingException {
+            @RequestBody @Valid EditImageRequest request) throws JsonProcessingException {
 
         Passport passport = objectMapper.readValue(token, Passport.class);
         Long adminId = passport.userId();
