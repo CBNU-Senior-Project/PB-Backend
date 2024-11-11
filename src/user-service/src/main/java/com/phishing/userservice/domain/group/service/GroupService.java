@@ -11,12 +11,14 @@ import com.phishing.userservice.domain.group.repository.GroupMemberRepository;
 import com.phishing.userservice.domain.group.repository.GroupRepository;
 import com.phishing.userservice.domain.group.repository.InvitationRepository;
 import com.phishing.userservice.domain.user.domain.User;
+import com.phishing.userservice.domain.user.domain.UserInfo;
 import com.phishing.userservice.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -55,11 +57,14 @@ public class GroupService {
         User receiver = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(request.receiverPhoneNumber())
                 .orElseThrow(() -> new NoSuchElementException("Receiver not found"));
 
+        // 자기 자신의 전화번호로 초대하려는 경우 예외 발생
+        if (sender.getUserInfo().getPhnum().equals(request.receiverPhoneNumber())) {
+            throw new IllegalArgumentException("You cannot invite yourself using your own phone number.");
+        }
 
         if (groupMemberRepository.existsByGroup_GroupIdAndUser_UserId(groupId, receiver.getUserId())) {
             throw new IllegalArgumentException("User is already a member of the group.");
         }
-
 
         boolean invitationExists = invitationRepository.existsByGroup_GroupIdAndReceiver_UserIdAndStatus(
                 groupId, receiver.getUserId(), "PENDING"
@@ -68,10 +73,10 @@ public class GroupService {
             throw new IllegalArgumentException("An invitation to this user is already pending.");
         }
 
-
         Invitation invitation = Invitation.create(group, sender, receiver);
         invitationRepository.save(invitation);
     }
+
 
     public void acceptInvitationAndAddToGroup(Long invitationId, String status) {
         Invitation invitation = invitationRepository.findById(invitationId)
@@ -224,6 +229,39 @@ public class GroupService {
         List<Group> groups = groupRepository.findByCreator_UserId(creatorId);
         return groups.stream().map(Group::getGroupId).collect(Collectors.toList());
     }
+
+
+    public List<UserInfo> getGroupLeaderInfo(Long userId) {
+        // Find the groups the user is a member of
+        List<GroupMember> groupMembers = groupMemberRepository.findByUser_UserId(userId);
+
+        List<UserInfo> groupLeadersInfo = new ArrayList<>();
+
+        // Iterate through the group members to get the group ID
+        for (GroupMember groupMember : groupMembers) {
+            Long groupId = groupMember.getGroup().getGroupId();  // Get the group ID
+
+            // Fetch the creator (group leader) from the group
+            Group group = groupMember.getGroup();
+            Long creatorId = group.getCreator().getUserId();  // Get the creator's userId (group leader)
+
+            // Retrieve the group leader's information (nickname, phone number, etc.)
+            User groupLeader = userRepository.findById(creatorId).orElseThrow(() -> new NoSuchElementException("Group leader not found"));
+
+            // Add the leader's user info to the list
+            groupLeadersInfo.add(groupLeader.getUserInfo());
+        }
+
+        // If no group is found for the user, throw an exception
+        if (groupLeadersInfo.isEmpty()) {
+            throw new NoSuchElementException("User is not part of any group with a leader.");
+        }
+
+        // Return the list of group leaders' info
+        return groupLeadersInfo;
+    }
+
+
 
 
 
