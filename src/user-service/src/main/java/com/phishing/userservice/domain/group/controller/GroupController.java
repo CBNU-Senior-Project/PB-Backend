@@ -9,6 +9,7 @@ import com.phishing.userservice.domain.group.payload.response.MemberInfoResponse
 import com.phishing.userservice.domain.group.payload.response.PutImageUrlResponse;
 import com.phishing.userservice.domain.group.service.GcsService;
 import com.phishing.userservice.domain.group.service.GroupService;
+import com.phishing.userservice.domain.user.domain.UserInfo;
 import com.phishing.userservice.global.component.token.TokenResolver;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -177,6 +178,30 @@ public class GroupController {
 
         return ResponseEntity.ok(memberInfos);
     }
+    @Tag(name = "그룹장 정보 조회", description = "특정 사용자가 속한 그룹의 그룹장 정보 (닉네임, 전화번호)를 조회하는 API")
+    @GetMapping("/user/{userId}/group-leader")
+    public ResponseEntity<List<UserInfo>> getGroupLeaderInfo(
+            @RequestHeader("X-Authorization") String token,
+            @PathVariable Long userId) throws JsonProcessingException {
+
+        Passport passport = objectMapper.readValue(token, Passport.class);
+        Long authenticatedUserId = passport.userId();  // Get user ID from the token
+
+        // Ensure that the authenticated user is allowed to fetch this information
+        if (!authenticatedUserId.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            // Fetch group leader info for the user (returns a list of group leaders)
+            List<UserInfo> groupLeadersInfo = groupService.getGroupLeaderInfo(userId);
+            return ResponseEntity.ok(groupLeadersInfo);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
 
 
 
