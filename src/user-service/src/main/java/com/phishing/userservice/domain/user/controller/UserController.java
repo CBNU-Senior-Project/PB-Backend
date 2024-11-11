@@ -10,6 +10,7 @@ import com.phishing.userservice.domain.user.payload.response.UserInfoResponse;
 import com.phishing.userservice.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UserController {
 
     @Tag(name = "이메일 중복체크", description = "이메일 중복체크 api, 실패시 400 에러반환")
     @GetMapping("/users/check")
-    public ResponseEntity<Void> checkEmail(@RequestParam @Valid @NotNull String email) {
+    public ResponseEntity<Void> checkEmail(@RequestParam @Valid @NotNull @Email String email) {
         userService.checkEmail(email);
         return ResponseEntity.ok().build();
     }
