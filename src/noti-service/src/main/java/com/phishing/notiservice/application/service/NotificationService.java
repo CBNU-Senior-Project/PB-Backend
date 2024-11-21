@@ -4,11 +4,8 @@ import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
-import com.phishing.notiservice.application.port.inbound.SendNotificationEvent;
-import com.phishing.notiservice.application.port.inbound.SendNotificationUsecase;
-import com.phishing.notiservice.application.port.outbound.LoadNotiUserPort;
-import com.phishing.notiservice.application.port.outbound.SaveNotiTrackingPort;
-import com.phishing.notiservice.application.port.outbound.SaveNotificationPort;
+import com.phishing.notiservice.application.port.inbound.*;
+import com.phishing.notiservice.application.port.outbound.*;
 import com.phishing.notiservice.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class NotificationService implements SendNotificationUsecase {
+public class NotificationService implements SendNotificationUsecase, ViewNotiListUsecase {
 
     private final LoadNotiUserPort loadNotiUserPort;
+    private final LoadNotificationPort loadNotificationPort;
     private final SaveNotificationPort saveNotificationPort;
     private final SaveNotiTrackingPort saveNotiTrackingPort;
+    private final LoadGroupMemberPort loadGroupMemberPort;
 
+    //To do: 알림 내용 변경 : "그룹원 '홍길동'님이 보이스피싱 의심 전화를 받고있습니다. 이런 식으로 멤버의 이름도 포함
     @Transactional
     @Override
     public void sendNotification(SendNotificationEvent sendNotificationEvent) {
@@ -37,8 +38,13 @@ public class NotificationService implements SendNotificationUsecase {
             return;
         }
         Notification targetNoti = Notification.create(NotiPayload.createPredFinNoti(sendNotificationEvent.probability()), NotiType.POTENTIAL_PHISHING_ALERT,
+                sendNotificationEvent.userId(),
                 loadNotiUserPort.loadNotiUser(sendNotificationEvent.userId()).getGroupId());
-        List<NotiUser> targetUsers = loadNotiUserPort.loadNotiUserByGroupId(targetNoti.getTargetGroupId());
+        List<GroupMember> groupMembers = loadGroupMemberPort.loadGroupMemberByGroupId(targetNoti.getTargetGroupId());
+        List<NotiUser> targetUsers = new ArrayList<>();
+        for(GroupMember member : groupMembers){
+            targetUsers.add(loadNotiUserPort.loadNotiUser(member.getUser()));
+        }
         List<Message> messages = new ArrayList<>();
         List<NotiTracking> trackings = new ArrayList<>();
         for(NotiUser user : targetUsers) {
@@ -47,7 +53,7 @@ public class NotificationService implements SendNotificationUsecase {
                     .setToken(user.getDeviceInfo().getToken())
                     .putData("title", targetNoti.getPayload().getTitle())
                     .putData("body", targetNoti.getPayload().getMessage())
-                    .putData("userId", user.getUserId().toString())
+                    .putData("userId", sendNotificationEvent.userId().toString())
                     .build();
             messages.add(targetMessage);
         }
@@ -69,6 +75,17 @@ public class NotificationService implements SendNotificationUsecase {
         }
         saveNotificationPort.saveNotification(targetNoti);
         saveNotiTrackingPort.saveNotiTracking(trackings);
+    }
+
+    @Override
+    public List<ViewNotiListResponse> viewNotiList(ViewNotiListQuery viewNotiListQuery) {
+        // Noti tracking 에서 userId 로 조회해서 notificationId 를 가져온 후
+        List<Notification> notifications = loadNotificationPort.loadNotificationByUserId(viewNotiListQuery.userId());
+        List<ViewNotiListResponse> responses = new ArrayList<>();
+        for (Notification notification : notifications) {
+            responses.add(ViewNotiListResponse.from(notification));
+        }
+        return responses;
     }
 
     private com.google.firebase.messaging.Notification createNotification(String title, String body) {
