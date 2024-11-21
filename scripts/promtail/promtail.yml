@@ -1,0 +1,49 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    basic_auth:
+      username: "admin"     # Loki 사용자 이름
+      password: "qwer1234!@#$" # Loki 비밀번호
+
+scrape_configs:
+  - job_name: 'user-service'
+    static_configs:
+      - targets:
+          - ['localhost:8082']
+        labels:
+          job: ticketing_logs
+          __path__: /var/log/myapp/user-service.log
+  - job_name: 'noti-service'
+    static_configs:
+      - targets:
+          - ['localhost:8084']
+        labels:
+          job: ticketing_logs
+          __path__: /var/log/myapp/noti-service.log
+  - job_name: 'gateway-service'
+    static_configs:
+      - targets:
+          - ['localhost:8080']
+        labels:
+          job: ticketing_logs
+          __path__: /var/log/myapp/gateway-service.log
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: '"@timestamp"'
+            level: level
+            logger: logger_name
+            thread: thread_name
+            message: message
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      - labels:
+          level:
+          logger:
+          thread:
