@@ -14,8 +14,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect  # 사용하는 DB 방언으로 교체
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+        show_sql: false
+        format_sql: false
     hibernate:
       ddl-auto: update
   cloud:
@@ -38,11 +38,12 @@ jwt:
     key: ${JWT_SECRET_KEY}
 server:
   port: 8082
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+
 news:
   crawling:
     baseurl: ${CRAWLING_BASEURL}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"

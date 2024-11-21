@@ -36,6 +36,8 @@ spring:
 restclient:
   baseuri: http://${GATEWAY_HOST}:${GATEWAY_PORT}
 
-logging:
-  level:
-    feign: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
