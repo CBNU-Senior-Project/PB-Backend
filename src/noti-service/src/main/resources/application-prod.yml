@@ -30,3 +30,8 @@ eureka:
     register-with-eureka: true
     serviceUrl:
       defaultZone: http://${EUREKA_HOSTNAME}/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"

@@ -5,10 +5,7 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.phishing.notiservice.application.port.inbound.*;
-import com.phishing.notiservice.application.port.outbound.LoadNotiUserPort;
-import com.phishing.notiservice.application.port.outbound.LoadNotificationPort;
-import com.phishing.notiservice.application.port.outbound.SaveNotiTrackingPort;
-import com.phishing.notiservice.application.port.outbound.SaveNotificationPort;
+import com.phishing.notiservice.application.port.outbound.*;
 import com.phishing.notiservice.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +26,7 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
     private final LoadNotificationPort loadNotificationPort;
     private final SaveNotificationPort saveNotificationPort;
     private final SaveNotiTrackingPort saveNotiTrackingPort;
+    private final LoadGroupMemberPort loadGroupMemberPort;
 
     //To do: 알림 내용 변경 : "그룹원 '홍길동'님이 보이스피싱 의심 전화를 받고있습니다. 이런 식으로 멤버의 이름도 포함
     @Transactional
@@ -42,7 +40,11 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
         Notification targetNoti = Notification.create(NotiPayload.createPredFinNoti(sendNotificationEvent.probability()), NotiType.POTENTIAL_PHISHING_ALERT,
                 sendNotificationEvent.userId(),
                 loadNotiUserPort.loadNotiUser(sendNotificationEvent.userId()).getGroupId());
-        List<NotiUser> targetUsers = loadNotiUserPort.loadNotiUserByGroupId(targetNoti.getTargetGroupId());
+        List<GroupMember> groupMembers = loadGroupMemberPort.loadGroupMemberByGroupId(targetNoti.getTargetGroupId());
+        List<NotiUser> targetUsers = new ArrayList<>();
+        for(GroupMember member : groupMembers){
+            targetUsers.add(loadNotiUserPort.loadNotiUser(member.getUser()));
+        }
         List<Message> messages = new ArrayList<>();
         List<NotiTracking> trackings = new ArrayList<>();
         for(NotiUser user : targetUsers) {
@@ -51,7 +53,7 @@ public class NotificationService implements SendNotificationUsecase, ViewNotiLis
                     .setToken(user.getDeviceInfo().getToken())
                     .putData("title", targetNoti.getPayload().getTitle())
                     .putData("body", targetNoti.getPayload().getMessage())
-                    .putData("userId", user.getUserId().toString())
+                    .putData("userId", sendNotificationEvent.userId().toString())
                     .build();
             messages.add(targetMessage);
         }
