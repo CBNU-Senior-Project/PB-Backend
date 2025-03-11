@@ -74,4 +74,19 @@ Phishing Block은 사용자의 전화를 실시간으로 감지하고 AI를 활�
             <a href="https://github.com/sso9594"><I>sso9594</I></a>
         </td>
     </tr>
+    <tr align="center">
+        <td>
+            AI 모델 개발, AOS 개발
+        </td>
+        <td>
+            포스트 서버, 커뮤니티 서버 개발
+        </td>
+        <td>
+            Spring Cloud Gateway, 인증 서버, 
+            <br>
+            알림 서버, AI 판별 서버,
+            <br>
+            Kafka 구축, 모니터링 인프라 구축, 배포
+        </td>
+    </tr>
 </table>
