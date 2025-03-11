@@ -1,3 +1,4 @@
+![video](./resources/sample_video.gif)
 # Phishing Block Server
 
 ----
