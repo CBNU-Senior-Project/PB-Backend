@@ -1,4 +1,6 @@
-![video](./resources/sample_video.gif)
+![sample_video-VEED](https://github.com/user-attachments/assets/d2b98b39-60d7-462a-b4b2-69f9ff9e211b)
+
+
 # Phishing Block Server
 
 ----
