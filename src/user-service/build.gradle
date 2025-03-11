@@ -72,6 +72,9 @@ dependencies {
 	// Spring Cloud Eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+	//Selenium for crawling
+	implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
+
 }
 
 tasks.named('test') {
