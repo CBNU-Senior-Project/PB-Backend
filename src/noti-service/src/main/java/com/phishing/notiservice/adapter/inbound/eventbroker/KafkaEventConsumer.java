@@ -23,7 +23,7 @@ public class KafkaEventConsumer {
         log.info("Consumed message: {}", predictFinishedEvent);
         SendNotificationEvent event = new SendNotificationEvent(
                 predictFinishedEvent.getUserId(),
-                predictFinishedEvent.isPhishing(),
+                predictFinishedEvent.getIsPhishing().equals("true"),
                 predictFinishedEvent.getProbability()
         );
         sendNotificationUsecase.sendNotification(event);

@@ -7,10 +7,12 @@ import com.phishing.userservice.domain.user.domain.User;
 import com.phishing.userservice.domain.user.exception.exceptions.DuplicateEmailException;
 import com.phishing.userservice.domain.user.payload.request.EditProfileRequest;
 import com.phishing.userservice.domain.user.payload.request.SignUpRequest;
+import com.phishing.userservice.domain.user.payload.response.UserIdResponse;
 import com.phishing.userservice.domain.user.payload.response.UserInfoResponse;
 import com.phishing.userservice.domain.user.repository.UserRepository;
 
 import com.phishing.userservice.domain.user.util.UserInfoConverter;
+import com.phishing.userservice.domain.user.util.UserResponseConverter;
 import com.phishing.userservice.global.component.token.TokenResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,18 +38,30 @@ public class UserService {
         }
     }
 
-    public void signUp(SignUpRequest request) {
-        checkEmail(request.userCertification().getEmail());
-        User user = User.signUp(
-                request.userCertification().getEmail(),
-                passwordEncoder.encode(request.userCertification().getPassword()),
-                request.userInfo(),
-                request.userRole()
-        );
-        userRepository.save(user);
-
+    public void checkPhoneNumber(String phoneNumber) {
+        if (userRepository.existsByUserInfo_Phnum(phoneNumber)) {
+            throw new DuplicateEmailException("Phone number already exists");
+        }
     }
 
+    public void signUp(SignUpRequest request) {
+        try {
+            checkEmail(request.userCertification().getEmail());
+            checkEmail(request.userInfo().getPhnum());
+
+            User user = User.signUp(
+                    request.userCertification().getEmail(),
+                    passwordEncoder.encode(request.userCertification().getPassword()),
+                    request.userInfo(),
+                    request.userRole()
+            );
+
+            userRepository.save(user);
+        } catch (Exception e) {
+            log.error("Failed to sign up", e);
+            throw e;
+        }
+    }
     public void editProfile(String token, EditProfileRequest request) throws JsonProcessingException {
         Passport userInfo = objectMapper.readValue(token, Passport.class);
         User targetUser = userRepository.findByUserIdAndIsDeletedIsFalse(userInfo.userId())
@@ -75,6 +89,12 @@ public class UserService {
         User targetUser = userRepository.findByUserIdAndIsDeletedIsFalse(userId)
                 .orElseThrow(() -> new NoSuchElementException("Email Not exists"));
         return UserInfoConverter.from(targetUser);
+    }
+
+    public UserIdResponse findUserIdByPhoneNumber(String phoneNumber) {
+        User targetUser = userRepository.findByUserInfo_PhnumAndIsDeletedIsFalse(phoneNumber)
+                .orElseThrow(() -> new NoSuchElementException("Phone number not found"));
+        return UserResponseConverter.from(targetUser);
     }
 
 

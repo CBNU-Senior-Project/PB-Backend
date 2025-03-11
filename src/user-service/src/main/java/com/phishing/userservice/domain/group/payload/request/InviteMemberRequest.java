@@ -1,6 +1,9 @@
 package com.phishing.userservice.domain.group.payload.request;
 
+import jakarta.validation.constraints.Pattern;
+
 public record InviteMemberRequest(
-        Long receiverId
-        // 초대받을 유저의 ID
+        @Pattern(regexp = "^01(?:0|1|[6-9])\\d{3,4}\\d{4}$")
+        String receiverPhoneNumber
+
 ) {}

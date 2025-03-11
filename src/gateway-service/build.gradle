@@ -51,6 +51,11 @@ dependencies {
 	implementation("io.github.openfeign:feign-reactive-wrappers")
 	implementation 'io.github.openfeign:feign-gson'
 
+	// Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// Prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 }
 
