@@ -1,0 +1,11 @@
+onnx:
+  model:
+    path: "/Users/sinseung-yong/Desktop/models"
+
+spring:
+  kafka:
+    consumer:
+      group-id: detected-service
+      auto-offset-reset: earliest
+    bootstrap:
+      servers: localhost:9092

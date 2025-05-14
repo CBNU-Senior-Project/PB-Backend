@@ -1,0 +1,26 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: noti-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: phishing
+    password: phishing
+    url: jdbc:mysql://localhost:3306/phishing?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+  kafka:
+    consumer:
+      group-id: storage-service
+      auto-offset-reset: earliest
+    bootstrap:
+      servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
